@@ -98,12 +98,14 @@ bool CGLContextEGL::Refresh(bool force, int screen, Window glWindow, bool &newCo
     return false;
   }
 
+#if defined (HAS_GL)
   if (!eglBindAPI(EGL_OPENGL_API))
   {
-    CLog::Log(LOGERROR, "failed to initialize egl");
+    CLog::Log(LOGERROR, "failed to bind OPENGL api");
     Destroy();
     return false;
   }
+#endif
 
   // create context
 
@@ -232,12 +234,14 @@ bool CGLContextEGL::CreatePB()
     Destroy();
     return false;
   }
+#if defined (HAS_GL)
   if (!eglBindAPI(EGL_OPENGL_API))
   {
-    CLog::Log(LOGERROR, "failed to initialize egl");
+    CLog::Log(LOGERROR, "failed to bind OPENGL API");
     Destroy();
     return false;
   }
+#endif
 
   EGLint numConfigs;
 
@@ -419,9 +423,15 @@ void CGLContextEGL::SwapBuffers()
   uint64_t cont = m_sync.cont;
   uint64_t interval = m_sync.interval;
 
-  eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust1, &msc1, &sbc1);
+  if (eglGetSyncValuesCHROMIUM)
+  {
+    eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust1, &msc1, &sbc1);
+  }
 
   eglSwapBuffers(m_eglDisplay, m_eglSurface);
+
+  if (!eglGetSyncValuesCHROMIUM)
+    return;
 
   clock_gettime(CLOCK_MONOTONIC, &nowTs);
   now = static_cast<uint64_t>(nowTs.tv_sec) * 1000000000ULL + nowTs.tv_nsec;
@@ -531,3 +541,51 @@ void CGLContextEGL::QueryExtensions()
 
   CLog::Log(LOGDEBUG, "EGL_EXTENSIONS:%s", m_extensions.c_str());
 }
+
+XVisualInfo* CGLContextEGL::GetVisual()
+{
+    GLint att[] =
+    {
+      EGL_RED_SIZE, 8,
+      EGL_GREEN_SIZE, 8,
+      EGL_BLUE_SIZE, 8,
+      EGL_ALPHA_SIZE, 8,
+      EGL_BUFFER_SIZE, 32,
+      EGL_DEPTH_SIZE, 24,
+      EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+      EGL_NONE
+    };
+
+    if (m_eglDisplay == EGL_NO_DISPLAY)
+    {
+      m_eglDisplay = eglGetDisplay((EGLNativeDisplayType)m_dpy);
+      if (m_eglDisplay == EGL_NO_DISPLAY)
+      {
+        CLog::Log(LOGERROR, "failed to get egl display\n");
+	return NULL;
+      }
+      if (!eglInitialize(m_eglDisplay, NULL, NULL))
+      {
+	CLog::Log(LOGERROR, "failed to initialize egl display\n");
+	return NULL;
+      }
+    }
+
+    EGLint numConfigs;
+    EGLConfig eglConfig = 0;
+    if (!eglChooseConfig(m_eglDisplay, att, &eglConfig, 1, &numConfigs) || numConfigs == 0) {
+      CLog::Log(LOGERROR, "Failed to choose a config %d\n", eglGetError());
+    }
+    m_eglConfig=eglConfig;
+
+    XVisualInfo x11_visual_info_template;
+    if (!eglGetConfigAttrib(m_eglDisplay, m_eglConfig, EGL_NATIVE_VISUAL_ID, (EGLint*)&x11_visual_info_template.visualid)) {
+      CLog::Log(LOGERROR, "Failed to query native visual id\n");
+    }
+    int num_visuals;
+    return XGetVisualInfo(m_dpy,
+                        VisualIDMask,
+			&x11_visual_info_template,
+			&num_visuals);
+}
+
