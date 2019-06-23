@@ -264,8 +264,6 @@ XVisualInfo* CWinSystemX11GLESContext::GetVisual()
   int num_visuals;
   XVisualInfo *visual = 
     XGetVisualInfo(m_dpy, VisualIDMask, &x11_visual_info_template, &num_visuals);
-  
-  eglTerminate(eglDisplay);
   return visual;
 }
 
@@ -297,6 +295,7 @@ bool CWinSystemX11GLESContext::RefreshGLContext(bool force)
   if (!success && gli == "EGL_PB")
   {
     success = m_pGLContext->CreatePB();
+    m_newGlContext = true;
   }
 
   if (!success)
