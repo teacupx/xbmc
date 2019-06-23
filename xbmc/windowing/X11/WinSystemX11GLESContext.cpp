@@ -1,9 +1,14 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
-#include "system.h"
-
-#if defined(HAVE_X11) && defined(HAS_GLES)
 
 #include "WinSystemX11GLESContext.h"
+#include "GLContextEGL.h"
 #include "utils/log.h"
 #include "windowing/GraphicContext.h"
 #include "guilib/DispResource.h"
@@ -66,21 +71,6 @@ CWinSystemX11GLESContext::CWinSystemX11GLESContext()
   m_lirc.reset(OPTIONALS::LircRegister());
 }
 
-bool CWinSystemX11GLESContext::InitWindowSystem()
-{
-  if (!CWinSystemX11::InitWindowSystem())
-    return false;
-
-  VIDEOPLAYER::CProcessInfoX11::Register();
-  RETRO::CRPProcessInfoX11::Register();
-  RETRO::CRPProcessInfoX11::RegisterRendererFactory(new RETRO::CRendererFactoryOpenGLES);
-  CDVDFactoryCodec::ClearHWAccels();
-  VIDEOPLAYER::CRendererFactory::ClearRenderer();
-  CLinuxRendererGLES::Register();
-
-  return true;
-}
-
 CWinSystemX11GLESContext::~CWinSystemX11GLESContext()
 {
   delete m_pGLContext;
@@ -114,9 +104,30 @@ bool CWinSystemX11GLESContext::IsExtSupported(const char* extension) const
   return m_pGLContext->IsExtSupported(extension);
 }
 
+EGLDisplay CWinSystemX11GLESContext::GetEGLDisplay() const 
+{
+  return m_pGLContext->m_eglDisplay;
+}
+
+EGLSurface CWinSystemX11GLESContext::GetEGLSurface() const
+{
+  return m_pGLContext->m_eglSurface;
+}
+
+EGLContext CWinSystemX11GLESContext::GetEGLContext() const
+{
+  return m_pGLContext->m_eglContext;
+}
+
+EGLConfig CWinSystemX11GLESContext::GetEGLConfig() const
+{
+  return  m_pGLContext->m_eglConfig;
+}
+
 bool CWinSystemX11GLESContext::SetWindow(int width, int height, bool fullscreen, const std::string &output, int *winstate)
 {
   int newwin = 0;
+
   CWinSystemX11::SetWindow(width, height, fullscreen, output, &newwin);
   if (newwin)
   {
@@ -162,6 +173,16 @@ bool CWinSystemX11GLESContext::ResizeWindow(int newWidth, int newHeight, int new
   return true;
 }
 
+void CWinSystemX11GLESContext::FinishWindowResize(int newWidth, int newHeight)
+{
+  m_newGlContext = false;
+  CWinSystemX11::FinishWindowResize(newWidth, newHeight);
+  CRenderSystemGLES::ResetRenderSystem(newWidth, newHeight);
+
+  if (m_newGlContext)
+    g_application.ReloadSkin();
+}
+
 bool CWinSystemX11GLESContext::SetFullScreen(bool fullScreen, RESOLUTION_INFO& res, bool blankOtherDisplays)
 {
   m_newGlContext = false;
@@ -176,34 +197,112 @@ bool CWinSystemX11GLESContext::SetFullScreen(bool fullScreen, RESOLUTION_INFO& r
 
 bool CWinSystemX11GLESContext::DestroyWindowSystem()
 {
-  m_pGLContext->Destroy();
+  if (m_pGLContext)
+    m_pGLContext->Destroy();
   return CWinSystemX11::DestroyWindowSystem();
 }
 
 bool CWinSystemX11GLESContext::DestroyWindow()
 {
-  m_pGLContext->Detach();
+  if (m_pGLContext)
+    m_pGLContext->Detach();
   return CWinSystemX11::DestroyWindow();
 }
 
 XVisualInfo* CWinSystemX11GLESContext::GetVisual()
 {
- // CLog::Log(LOGNOTICE, "CWinSystemX11GLESContext::GetVisual() m_pGLContext:%p GetVisual", m_pGLContext);
-  if(!m_pGLContext)
+  EGLDisplay eglDisplay;
+
+  PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
+    (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
+  if (eglGetPlatformDisplayEXT)
   {
- //   CLog::Log(LOGNOTICE, "Create new CGLContextEGL at CWinSystemX11GLESContext::CreateNewWindow, m_dpy=%p", m_dpy);
-    m_pGLContext = new CGLContextEGL(m_dpy);
+    EGLint attribs[] =
+    {
+      EGL_PLATFORM_X11_SCREEN_EXT, m_screen,
+      EGL_NONE
+    };
+    eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_X11_EXT,(EGLNativeDisplayType)m_dpy, attribs);
   }
-  return m_pGLContext->GetVisual();
+  else
+    eglDisplay = eglGetDisplay((EGLNativeDisplayType)m_dpy);
+
+  if (eglDisplay == EGL_NO_DISPLAY)
+  {
+    CLog::Log(LOGERROR, "failed to get egl display\n");
+    return nullptr;
+  }
+  if (!eglInitialize(eglDisplay, nullptr, nullptr))
+  {
+    CLog::Log(LOGERROR, "failed to initialize egl display\n");
+    return nullptr;
+  }
+
+  GLint att[] =
+  {
+    EGL_RED_SIZE, 8,
+    EGL_GREEN_SIZE, 8,
+    EGL_BLUE_SIZE, 8,
+    EGL_ALPHA_SIZE, 8,
+    EGL_BUFFER_SIZE, 32,
+    EGL_DEPTH_SIZE, 24,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+    EGL_NONE
+  };
+  EGLint numConfigs;
+  EGLConfig eglConfig = 0;
+  if (!eglChooseConfig(eglDisplay, att, &eglConfig, 1, &numConfigs) || numConfigs == 0) {
+    CLog::Log(LOGERROR, "Failed to choose a config %d\n", eglGetError());
+    return nullptr;
+  }
+
+  XVisualInfo x11_visual_info_template;
+  if (!eglGetConfigAttrib(eglDisplay, eglConfig, EGL_NATIVE_VISUAL_ID, (EGLint*)&x11_visual_info_template.visualid)) {
+    CLog::Log(LOGERROR, "Failed to query native visual id\n");
+    return nullptr;
+  }
+  int num_visuals;
+  XVisualInfo *visual = 
+    XGetVisualInfo(m_dpy, VisualIDMask, &x11_visual_info_template, &num_visuals);
+  
+  eglTerminate(eglDisplay);
+  return visual;
 }
 
 bool CWinSystemX11GLESContext::RefreshGLContext(bool force)
 {
-  if (!m_pGLContext)
+  bool success = false;
+  if (m_pGLContext)
   {
-    m_pGLContext = new CGLContextEGL(m_dpy);
+    success = m_pGLContext->Refresh(force, m_screen, m_glWindow, m_newGlContext);
+    if (!success)
+    {
+      success = m_pGLContext->CreatePB();
+      m_newGlContext = true;
+    }
+    return success;
   }
-  return m_pGLContext->Refresh(force, m_screen, m_glWindow, m_newGlContext);
-}
 
-#endif
+  VIDEOPLAYER::CProcessInfoX11::Register();
+  RETRO::CRPProcessInfoX11::Register();
+  RETRO::CRPProcessInfoX11::RegisterRendererFactory(new RETRO::CRendererFactoryOpenGLES);
+  CDVDFactoryCodec::ClearHWAccels();
+  VIDEOPLAYER::CRendererFactory::ClearRenderer();
+  CLinuxRendererGLES::Register();
+
+  std::string gli = (getenv("KODI_GL_INTERFACE") != nullptr) ? getenv("KODI_GL_INTERFACE") : "";
+
+  m_pGLContext = new CGLContextEGL(m_dpy);
+  success = m_pGLContext->Refresh(force, m_screen, m_glWindow, m_newGlContext);
+  if (!success && gli == "EGL_PB")
+  {
+    success = m_pGLContext->CreatePB();
+  }
+
+  if (!success)
+  {
+    delete m_pGLContext;
+    m_pGLContext = nullptr;
+  }
+  return success;
+}
