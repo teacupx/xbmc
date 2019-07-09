@@ -78,7 +78,7 @@ CWinSystemX11GLESContext::~CWinSystemX11GLESContext()
 
 void CWinSystemX11GLESContext::PresentRenderImpl(bool rendered)
 {
-  if (rendered)
+  if (rendered && m_pGLContext)
     m_pGLContext->SwapBuffers();
 
   if (m_delayDispReset && m_dispResetTimer.IsTimePast())
@@ -154,7 +154,7 @@ bool CWinSystemX11GLESContext::SetWindow(int width, int height, bool fullscreen,
 bool CWinSystemX11GLESContext::CreateNewWindow(const std::string& name, bool fullScreen, RESOLUTION_INFO& res)
 {
   CLog::Log(LOGNOTICE, "CWinSystemX11GLESContext::CreateNewWindow");
-  if(!CWinSystemX11::CreateNewWindow(name, fullScreen, res))
+  if(!CWinSystemX11::CreateNewWindow(name, fullScreen, res) || !m_pGLContext)
     return false;
 
   m_pGLContext->QueryExtensions();
