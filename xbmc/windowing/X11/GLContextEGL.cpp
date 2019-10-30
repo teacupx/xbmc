@@ -25,9 +25,11 @@
 
 #define EGL_NO_CONFIG (EGLConfig)0
 
-CGLContextEGL::CGLContextEGL(Display *dpy) : CGLContext(dpy)
+CGLContextEGL::CGLContextEGL(Display *dpy, EGLint renderingApi) : CGLContext(dpy)
 {
   m_extPrefix = "EGL_";
+  m_renderingApi = renderingApi;
+
   m_eglDisplay = EGL_NO_DISPLAY;
   m_eglSurface = EGL_NO_SURFACE;
   m_eglContext = EGL_NO_CONTEXT;
@@ -97,15 +99,12 @@ bool CGLContextEGL::Refresh(bool force, int screen, Window glWindow, bool &newCo
     Destroy();
     return false;
   }
-
-#if defined (HAS_GL)
-  if (!eglBindAPI(EGL_OPENGL_API))
+  if (!eglBindAPI(m_renderingApi))
   {
-    CLog::Log(LOGERROR, "failed to bind OPENGL api");
+    CLog::Log(LOGERROR, "failed to bind rendering API");
     Destroy();
     return false;
   }
-#endif
 
   // create context
 
@@ -233,14 +232,12 @@ bool CGLContextEGL::CreatePB()
     Destroy();
     return false;
   }
-#if defined (HAS_GL)
-  if (!eglBindAPI(EGL_OPENGL_API))
+  if (!eglBindAPI(m_renderingApi))
   {
-    CLog::Log(LOGERROR, "failed to bind OPENGL API");
+    CLog::Log(LOGERROR, "failed to bind rendering API");
     Destroy();
     return false;
   }
-#endif
 
   EGLint numConfigs;
 
