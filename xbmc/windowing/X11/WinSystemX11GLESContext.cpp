@@ -290,7 +290,7 @@ bool CWinSystemX11GLESContext::RefreshGLContext(bool force)
 
   std::string gli = (getenv("KODI_GL_INTERFACE") != nullptr) ? getenv("KODI_GL_INTERFACE") : "";
 
-  m_pGLContext = new CGLContextEGL(m_dpy);
+  m_pGLContext = new CGLContextEGL(m_dpy,EGL_OPENGL_ES_API);
   success = m_pGLContext->Refresh(force, m_screen, m_glWindow, m_newGlContext);
   if (!success && gli == "EGL_PB")
   {
