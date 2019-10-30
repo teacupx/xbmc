@@ -36,8 +36,8 @@ public:
 protected:
   bool SuitableCheck(EGLDisplay eglDisplay, EGLConfig config);
   EGLConfig GetEGLConfig(EGLDisplay eglDisplay, XVisualInfo *vInfo);
-  PFNEGLGETSYNCVALUESCHROMIUMPROC eglGetSyncValuesCHROMIUM = nullptr;
-  PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT = nullptr;
+  PFNEGLGETSYNCVALUESCHROMIUMPROC m_eglGetSyncValuesCHROMIUM = nullptr;
+  PFNEGLGETPLATFORMDISPLAYEXTPROC m_eglGetPlatformDisplayEXT = nullptr;
 
   struct Sync
   {
