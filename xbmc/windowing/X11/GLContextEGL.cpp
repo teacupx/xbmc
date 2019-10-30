@@ -33,7 +33,7 @@ CGLContextEGL::CGLContextEGL(Display *dpy) : CGLContext(dpy)
   m_eglContext = EGL_NO_CONTEXT;
   m_eglConfig = EGL_NO_CONFIG;
 
-  eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
+  m_eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress("eglGetPlatformDisplayEXT");
 
   CSettingsComponent *settings = CServiceBroker::GetSettingsComponent();
   if (settings)
@@ -73,14 +73,14 @@ bool CGLContextEGL::Refresh(bool force, int screen, Window glWindow, bool &newCo
   Destroy();
   newContext = true;
 
-  if (eglGetPlatformDisplayEXT)
+  if (m_eglGetPlatformDisplayEXT)
   {
     EGLint attribs[] =
     {
       EGL_PLATFORM_X11_SCREEN_EXT, screen,
       EGL_NONE
     };
-    m_eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_X11_EXT,(EGLNativeDisplayType)m_dpy,
+    m_eglDisplay = m_eglGetPlatformDisplayEXT(EGL_PLATFORM_X11_EXT,(EGLNativeDisplayType)m_dpy,
                                             attribs);
   }
   else
@@ -186,7 +186,7 @@ bool CGLContextEGL::Refresh(bool force, int screen, Window glWindow, bool &newCo
     return false;
   }
 
-  eglGetSyncValuesCHROMIUM = (PFNEGLGETSYNCVALUESCHROMIUMPROC)eglGetProcAddress("eglGetSyncValuesCHROMIUM");
+  m_eglGetSyncValuesCHROMIUM = (PFNEGLGETSYNCVALUESCHROMIUMPROC)eglGetProcAddress("eglGetSyncValuesCHROMIUM");
 
   m_usePB = false;
   return true;
@@ -214,9 +214,9 @@ bool CGLContextEGL::CreatePB()
 
   Destroy();
 
-  if (eglGetPlatformDisplayEXT)
+  if (m_eglGetPlatformDisplayEXT)
   {
-    m_eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_X11_EXT,(EGLNativeDisplayType)m_dpy,
+    m_eglDisplay = m_eglGetPlatformDisplayEXT(EGL_PLATFORM_X11_EXT,(EGLNativeDisplayType)m_dpy,
                                             NULL);
   }
   else
@@ -422,20 +422,20 @@ void CGLContextEGL::SwapBuffers()
   uint64_t cont = m_sync.cont;
   uint64_t interval = m_sync.interval;
 
-  if (eglGetSyncValuesCHROMIUM)
+  if (m_eglGetSyncValuesCHROMIUM)
   {
-    eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust1, &msc1, &sbc1);
+    m_eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust1, &msc1, &sbc1);
   }
 
   eglSwapBuffers(m_eglDisplay, m_eglSurface);
 
-  if (!eglGetSyncValuesCHROMIUM)
+  if (!m_eglGetSyncValuesCHROMIUM)
     return;
 
   clock_gettime(CLOCK_MONOTONIC, &nowTs);
   now = static_cast<uint64_t>(nowTs.tv_sec) * 1000000000ULL + nowTs.tv_nsec;
 
-  eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust2, &msc2, &sbc2);
+  m_eglGetSyncValuesCHROMIUM(m_eglDisplay, m_eglSurface, &ust2, &msc2, &sbc2);
 
   if ((msc1 - m_sync.msc1) > 2)
   {
