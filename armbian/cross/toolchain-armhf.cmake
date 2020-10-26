@@ -36,6 +36,4 @@ SET(CMAKE_OBJCOPY       /usr/bin/${ARCH}-${TARGET_ABI}-objcopy  CACHE FILEPATH "
 SET(CMAKE_STRIP         /usr/bin/${ARCH}-${TARGET_ABI}-strip    CACHE FILEPATH "strip")
 SET(CMAKE_CPP           /usr/bin/${ARCH}-${TARGET_ABI}-cpp      CACHE FILEPATH "cpp")
 
-# Let cmakelists know we are cross-compiling
-set(CMAKE_CROSSCOMPILING ON CACHE BOOL "Cross-compiling" FORCE)
 
