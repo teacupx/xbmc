@@ -162,7 +162,7 @@ CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" \
 	--enable-pic \
 	--enable-zlib \
 	--disable-mipsdsp \
-	--disable-mipsdspr2 \
+	--disable-mipsdspr2 --enable-version3 --enable-libdrm --enable-rkmpp \
         ${FLAGS}
 
 make -j ${BUILDTHREADS}

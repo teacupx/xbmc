@@ -114,7 +114,7 @@ externalproject_add(ffmpeg
                       --enable-encoder=wmav2
                       --enable-protocol=http
                       --enable-encoder=png
-                      --enable-encoder=mjpeg
+                      --enable-encoder=mjpeg --enable-version3 --enable-libdrm --enable-rkmpp
                       ${ffmpeg_conf})
 
 install(CODE "Message(Done)")
