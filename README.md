@@ -13,7 +13,7 @@ an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 	$ apt install ./xbmc/armbian/kodi-build-deps-buster_18.8+dfsg1-2_armhf.deb -t buster-backports
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/ffmpeg-4.0.3-Leia-RC5.tar.gz -DENABLE_X11=OFF -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDEBIAN_PACKAGE_VERSION=18.0 -DDEBIAN_PACKAGE_REVISION=0armbian-rockchip1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/ffmpeg-4.0.3-Leia-RC5.tar.gz -DENABLE_X11=OFF -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_INTERNAL_FMT=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDEBIAN_PACKAGE_VERSION=18.0 -DDEBIAN_PACKAGE_REVISION=0armbian-rockchip1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
 	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 
