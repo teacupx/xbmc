@@ -10,7 +10,8 @@ an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 
 ### Build for armhf
 	$ git clone https://github.com/teacupx/xbmc
-	$ apt install ./xbmc/armbian/kodi-build-deps-buster_18.8+dfsg1-2_armhf.deb -t buster-backports
+	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster_18.8+dfsg1-2_armhf.deb -t buster-backports
+	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
 	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_X11=OFF -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian-rockchip1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
