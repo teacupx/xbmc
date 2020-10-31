@@ -1,6 +1,6 @@
-# Kodi for Armbian
+# Kodi for Armbian - ROCKCHIP BRANCH
 
-Kodi tweaked for Armbian builds
+Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for Rockchip Legacy kernel.
 
 ## Usage:
 
