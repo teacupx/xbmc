@@ -1,20 +1,21 @@
-# Kodi for Armbian - ROCKCHIP BRANCH
+# Kodi for Armbian - XU4 BRANCH
 
-Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for Rockchip Legacy kernel.
+Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for ODROID XU4, and possibly other devices using GBM and the v4l2_m2m interface.
 
 ## Usage:
 
-Build host must be a Debian Buster machine, or a Buster chroot. Currently,
-only native armhf and arm64 compiling is supported (either on an ARM board, or 
-an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
+Build host must be a Debian Buster machine, or a Buster chroot. All the default Armbian repositores must be enabled.
+
+Currently, only native armhf and arm64 compiling is supported (either on an ARM board, or an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 
 ### Build for armhf
 	$ git clone https://github.com/teacupx/xbmc
-	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster_18.8+dfsg1-2_armhf.deb -t buster-backports
+	$ git --git-dir=xbmc/.git checkout Armbian-Leia-xu4
+	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster_18.9-0armbian1_armhf.deb -t buster-backports
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_X11=OFF -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian-rockchip1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DCPACK_PACKAGE_NAME=kodi-xu4 -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
 	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 
