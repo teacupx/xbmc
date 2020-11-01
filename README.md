@@ -4,9 +4,9 @@ Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for Rockch
 
 ## Usage:
 
-Build host must be a Debian Buster machine, or a Buster chroot. Currently,
-only native armhf and arm64 compiling is supported (either on an ARM board, or 
-an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
+Build host must be a Debian Buster machine, or a Buster chroot. All the default Armbian repositores must be enabled.
+
+Currently, only native armhf and arm64 compiling is supported (either on an ARM board, or an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 
 ### Build for RK3288 (Tinkerboard and others)
 	$ git clone https://github.com/teacupx/xbmc
@@ -14,7 +14,8 @@ an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_X11=OFF -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DCPACK_PACKAGE_NAME=kodi-rk -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
+	$ export CPPFLAGS="$CPPFLAGS -DVP9_FFMPEG_CODEC=libvpx-vp9"
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 ../xbmc
 	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 
