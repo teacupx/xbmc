@@ -59,6 +59,7 @@ float RESOLUTION_INFO::DisplayRatio() const
 
 RESOLUTION CResolutionUtils::ChooseBestResolution(float fps, int width, int height, bool is3D)
 {
+  fps = static_cast<float>(std::round(fps));
   RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
   float weight;
 
@@ -169,17 +170,6 @@ void CResolutionUtils::FindResolutionFromWhitelist(float fps, int width, int hei
   }
 
   CLog::Log(LOGDEBUG, "No 3:2 pullback refresh rate whitelisted resolution matched, trying current resolution");
-
-  if (width <= curr.iScreenWidth
-    && height <= curr.iScreenHeight
-    && (MathUtils::FloatEquals(curr.fRefreshRate, fps, 0.01f)
-      || MathUtils::FloatEquals(curr.fRefreshRate, fps * 2, 0.01f)))
-  {
-    CLog::Log(LOGDEBUG, "Matched current Resolution %s (%d)", curr.strMode.c_str(), resolution);
-    return;
-  }
-
-  CLog::Log(LOGDEBUG, "Current resolution doesn't match, trying default resolution");
 
   const RESOLUTION_INFO desktop_info = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(CDisplaySettings::GetInstance().GetCurrentResolution());
 

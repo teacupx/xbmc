@@ -545,7 +545,7 @@ bool CDRMUtils::OpenDrm(bool needConnector)
 
   for (auto module : modules)
   {
-    m_fd.attach(drmOpenWithType(module, nullptr, DRM_NODE_PRIMARY));
+    m_fd.attach(open("/dev/dri/card0", O_RDWR | O_CLOEXEC));
     if (m_fd)
     {
       if(!GetResources())
@@ -572,7 +572,7 @@ bool CDRMUtils::OpenDrm(bool needConnector)
 
       CLog::Log(LOGDEBUG, "CDRMUtils::%s - opened device: %s using module: %s", __FUNCTION__, drmGetDeviceNameFromFd2(m_fd), module);
 
-      m_renderFd.attach(drmOpenWithType(module, nullptr, DRM_NODE_RENDER));
+      m_renderFd.attach(open("/dev/dri/renderD128", O_RDWR | O_CLOEXEC));
       if (m_renderFd)
       {
         CLog::Log(LOGDEBUG, "CDRMUtils::%s - opened render node: %s using module: %s", __FUNCTION__, drmGetDeviceNameFromFd2(m_renderFd), module);
