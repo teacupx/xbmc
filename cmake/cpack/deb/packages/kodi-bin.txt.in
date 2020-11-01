@@ -18,8 +18,8 @@ PACKAGE_SHLIBDEPS ON
 PACKAGE_DEPENDS
 PACKAGE_RECOMMENDS
 PACKAGE_SUGGESTS
-PACKAGE_BREAKS xbmc-bin (<< 2:14.0~git20141019), xbmc-common
+PACKAGE_BREAKS xbmc-bin (<< 2:14.0~git20141019), xbmc-common, kodi-bin, kodi-xu4-bin, kodi
 PACKAGE_REPLACES xbmc-bin (<< 2:14.0~git20141019), xbmc-common
-PACKAGE_PROVIDES @APP_NAME_LC@-bin, @APP_NAME_LC@-common, xbmc-bin, xbmc-common
+PACKAGE_PROVIDES @APP_NAME_LC@-bin, @APP_NAME_LC@-common, xbmc-bin, xbmc-common, kodi, kodi-bin
 PACKAGE_DESCRIPTION_HEADER @APP_NAME@ Media Center (binary data package)
 PACKAGE_DESCRIPTION_FOOTER This package contains @APP_NAME@'s binary data.
