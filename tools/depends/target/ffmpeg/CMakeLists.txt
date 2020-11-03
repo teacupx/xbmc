@@ -10,6 +10,11 @@ else()
   set(ffmpeg_conf --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
 endif()
 
+# Patch FFmpeg to disable vp9-rkmpp if compiling for RK3288
+if(CPU STREQUAL cortex-a17)
+  execute_process(COMMAND sed -i -e /case\ AV_CODEC_ID_VP9:/d ${CMAKE_CURRENT_SOURCE_DIR}/libavcodec/rkmppdec.c OUTPUT_VARIABLE OUTSTR)
+endif()
+
 if(CROSSCOMPILING)
   set(pkgconf "PKG_CONFIG_LIBDIR=${DEPENDS_PATH}/lib/pkgconfig")
   list(APPEND ffmpeg_conf --pkg-config=${PKG_CONFIG_EXECUTABLE} --pkg-config-flags=--static)
