@@ -362,7 +362,7 @@ drmModePlanePtr CDRMUtils::FindPlane(drmModePlaneResPtr resources, int crtc_inde
       {
         drmModePropertyPtr p = drmModeGetProperty(m_fd, props->props[j]);
 
-        if ((strcmp(p->name, "type") == 0) && (props->prop_values[j] != DRM_PLANE_TYPE_CURSOR))
+        if (strcmp(p->name, "type") == 0)
         {
           switch (type)
           {
