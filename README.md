@@ -14,8 +14,7 @@ Currently, only native armhf and arm64 compiling is supported (either on an ARM 
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DCPACK_PACKAGE_NAME=kodi-xu4 -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a15 -DENABLE_NEON=ON -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release ../xbmc
-	$ cmake --build . -- -j$(nproc --all)
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_AML=OFF -DENABLE_OPENGLES=ON -DCORE_SYSTEM_NAME=linux -DOPENGLES_gl_LIBRARY=/usr/lib/arm-linux-gnueabihf/libEGL.so -DCORE_PLATFORM_NAME=X11 -DX11_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DENABLE_GLX=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DCPACK_PACKAGE_NAME=kodi-xu4 -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a15 -DENABLE_NEON=ON -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 
 You can find the output debs in the kodi-build/packages directory
