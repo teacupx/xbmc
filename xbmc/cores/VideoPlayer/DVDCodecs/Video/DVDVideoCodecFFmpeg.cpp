@@ -43,14 +43,14 @@ extern "C" {
 /* define what FFMPEG codecs to use */
 /* leave empty string for autodetect */
 #define MPEG2TS_FFMPEG_CODEC "mpeg2_v4l2m2m"
-#define H263_FFMPEG_CODEC    "h263_v4l2m2m"
+#define H263_FFMPEG_CODEC    ""
 #define H264_FFMPEG_CODEC    "h264_v4l2m2m"
-#define MPEG4_FFMPEG_CODEC   "mpeg4_v4l2m2m"
-#define MPEG1_FFMPEG_CODEC   "mpeg1_v4l2m2m"
+#define MPEG4_FFMPEG_CODEC   ""
+#define MPEG1_FFMPEG_CODEC   ""
 #define MPEG2_FFMPEG_CODEC   "mpeg2_v4l2m2m"
-#define VC1_FFMPEG_CODEC     "vc1_v4l2m2m"
+#define VC1_FFMPEG_CODEC     ""
 #define VP8_FFMPEG_CODEC     "vp8_v4l2m2m"
-#define VP9_FFMPEG_CODEC     "vp9_v4l2m2m"
+#define VP9_FFMPEG_CODEC     ""
 
 enum DecoderState
 {
