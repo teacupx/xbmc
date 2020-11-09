@@ -17,7 +17,7 @@ Currently, only native armhf and arm64 compiling is supported (either on an ARM 
 	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_AML=OFF -DENABLE_OPENGLES=ON -DCORE_SYSTEM_NAME=linux -DOPENGLES_gl_LIBRARY=/usr/lib/arm-linux-gnueabihf/libEGL.so -DCORE_PLATFORM_NAME=X11 -DX11_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DENABLE_GLX=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DCPACK_PACKAGE_NAME=kodi-xu4 -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a15 -DENABLE_NEON=ON -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 
-## Binary addons
+### Binary addons
 After finishing the above steps:
 
 	$ dpkg -i packages/kodi-addon-dev*.deb
@@ -28,7 +28,7 @@ After finishing the above steps:
 	$ cp -r armbian/addons-package/armhf/DEBIAN ../kodi-build/bin-addons/
 	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_armhf.deb
 
-**You can find the output debs in the kodi-build/packages directory.**
+**You can find the output debs in the `kodi-build/packages` directory.**
 
 ---
 
