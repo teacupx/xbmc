@@ -40,6 +40,18 @@ extern "C" {
 #define RINT lrint
 #endif
 
+/* define what FFMPEG codecs to use */
+/* leave empty string for autodetect */
+#define MPEG2TS_FFMPEG_CODEC "mpeg2_v4l2m2m"
+#define H263_FFMPEG_CODEC    ""
+#define H264_FFMPEG_CODEC    "h264_v4l2m2m"
+#define MPEG4_FFMPEG_CODEC   ""
+#define MPEG1_FFMPEG_CODEC   ""
+#define MPEG2_FFMPEG_CODEC   "mpeg2_v4l2m2m"
+#define VC1_FFMPEG_CODEC     ""
+#define VP8_FFMPEG_CODEC     "vp8_v4l2m2m"
+#define VP9_FFMPEG_CODEC     ""
+
 enum DecoderState
 {
   STATE_NONE,
@@ -324,7 +336,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   m_hints = hints;
   m_options = options;
 
-  AVCodec* pCodec;
+  AVCodec* pCodec = nullptr;
 
   m_iOrientation = hints.orientation;
 
@@ -334,7 +346,42 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   m_processInfo.SetSwDeinterlacingMethods();
   m_processInfo.SetVideoInterlaced(false);
 
-  pCodec = avcodec_find_decoder(hints.codec);
+  switch(hints.codec)
+  {
+    case AV_CODEC_ID_MPEG4:
+      pCodec = avcodec_find_decoder_by_name(MPEG4_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_MPEG2TS:
+      pCodec = avcodec_find_decoder_by_name(MPEG2TS_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_H263:
+      pCodec = avcodec_find_decoder_by_name(H263_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_H264:
+      pCodec = avcodec_find_decoder_by_name(H264_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_MPEG1VIDEO:
+      pCodec = avcodec_find_decoder_by_name(MPEG1_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_MPEG2VIDEO:
+      pCodec = avcodec_find_decoder_by_name(MPEG2_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_VC1:
+      pCodec = avcodec_find_decoder_by_name(VC1_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_VP8:
+      pCodec = avcodec_find_decoder_by_name(VP8_FFMPEG_CODEC);
+      break;
+    case AV_CODEC_ID_VP9:
+      pCodec = avcodec_find_decoder_by_name(VP9_FFMPEG_CODEC);
+      break;
+    default:
+      pCodec = avcodec_find_decoder(hints.codec);
+      break;
+  }
+
+  if (pCodec == NULL)
+    pCodec = avcodec_find_decoder(hints.codec);
 
   if(pCodec == NULL)
   {

@@ -10,6 +10,9 @@ else()
   set(ffmpeg_conf --cc=${CMAKE_C_COMPILER} --cxx=${CMAKE_CXX_COMPILER})
 endif()
 
+execute_process(COMMAND wget -O ${CMAKE_CURRENT_SOURCE_DIR}/mem_leak.patch https://pastebin.com/raw/4rQ0v2f7 OUTPUT_VARIABLE OUTSTR)
+execute_process(COMMAND patch -d ${CMAKE_CURRENT_SOURCE_DIR} -p1 -i mem_leak.patch OUTPUT_VARIABLE OUTSTR)
+
 if(CROSSCOMPILING)
   set(pkgconf "PKG_CONFIG_LIBDIR=${DEPENDS_PATH}/lib/pkgconfig")
   list(APPEND ffmpeg_conf --pkg-config=${PKG_CONFIG_EXECUTABLE} --pkg-config-flags=--static)
@@ -114,7 +117,7 @@ externalproject_add(ffmpeg
                       --enable-encoder=wmav2
                       --enable-protocol=http
                       --enable-encoder=png
-                      --enable-encoder=mjpeg --enable-version3 --enable-libdrm --enable-rkmpp
+                      --enable-encoder=mjpeg
                       ${ffmpeg_conf})
 
 install(CODE "Message(Done)")

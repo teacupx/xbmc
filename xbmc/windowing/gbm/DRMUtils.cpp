@@ -362,13 +362,13 @@ drmModePlanePtr CDRMUtils::FindPlane(drmModePlaneResPtr resources, int crtc_inde
       {
         drmModePropertyPtr p = drmModeGetProperty(m_fd, props->props[j]);
 
-        if ((strcmp(p->name, "type") == 0) && (props->prop_values[j] != DRM_PLANE_TYPE_CURSOR))
+        if (strcmp(p->name, "type") == 0)
         {
           switch (type)
           {
             case KODI_VIDEO_PLANE:
             {
-              if (SupportsFormat(plane, DRM_FORMAT_NV12))
+              if (SupportsFormat(plane, DRM_FORMAT_NV12) || SupportsFormat(plane, DRM_FORMAT_XRGB8888))
               {
                 CLog::Log(LOGDEBUG, "CDRMUtils::%s - found video plane %u", __FUNCTION__, plane->plane_id);
                 drmModeFreeProperty(p);
@@ -545,7 +545,7 @@ bool CDRMUtils::OpenDrm(bool needConnector)
 
   for (auto module : modules)
   {
-    m_fd.attach(drmOpenWithType(module, nullptr, DRM_NODE_PRIMARY));
+    m_fd.attach(open("/dev/dri/card0", O_RDWR | O_CLOEXEC));
     if (m_fd)
     {
       if(!GetResources())
@@ -572,7 +572,7 @@ bool CDRMUtils::OpenDrm(bool needConnector)
 
       CLog::Log(LOGDEBUG, "CDRMUtils::%s - opened device: %s using module: %s", __FUNCTION__, drmGetDeviceNameFromFd2(m_fd), module);
 
-      m_renderFd.attach(drmOpenWithType(module, nullptr, DRM_NODE_RENDER));
+      m_renderFd.attach(open("/dev/dri/renderD128", O_RDWR | O_CLOEXEC));
       if (m_renderFd)
       {
         CLog::Log(LOGDEBUG, "CDRMUtils::%s - opened render node: %s using module: %s", __FUNCTION__, drmGetDeviceNameFromFd2(m_renderFd), module);
