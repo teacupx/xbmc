@@ -60,6 +60,12 @@
           </constraints>
           <control type="list" format="string" />
         </setting>
+        <setting id="videoplayer.usesoftwaredecoder" type="boolean" label="13466" help="13467">
+          <visible>true</visible>
+          <level>1</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
         <setting id="videoplayer.usedisplayasclock" type="boolean" label="13510" help="36166">
           <level>1</level>
           <default>false</default>
