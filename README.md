@@ -1,6 +1,6 @@
 # Kodi for Armbian - XU4 BRANCH
 
-Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for ODROID XU4, and possibly other devices using GBM and the v4l2_m2m interface.
+Kodi tweaked for Armbian builds. This branch is meant to compile Kodi for ODROID XU4, and possibly other devices using GBM/GLES and the v4l2_m2m interface.
 
 ## Usage:
 
