@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# Some addons need to create directories on first run
+#
+chmod -R ugo+rwX /usr/local/share/kodi/addons/
+exit 0
