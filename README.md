@@ -9,7 +9,7 @@ Build host must be a Debian Buster machine, or a Buster chroot. All the default 
 Currently, only native armhf and arm64 compiling is supported (either on an ARM board, or an ARM chroot in an Intel machine through qemu). Cross-compile is WIP.
 
 ### Build for armhf
-	$ git clone https://github.com/teacupx/xbmc -b Armbian-Leia-xu4
+	$ git clone https://github.com/teacupx/xbmc -b Armbian-Leia-xu4-x11
 	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster_18.9-0armbian1_armhf.deb -t buster-backports
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
