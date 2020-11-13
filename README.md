@@ -10,7 +10,7 @@ Currently, only native armhf and arm64 compiling is supported (either on an ARM 
 
 ### Build for armhf
 	$ git clone https://github.com/teacupx/xbmc -b Armbian-Leia-xu4-x11
-	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster_18.9-0armbian1_armhf.deb -t buster-backports
+	$ apt -y install ./xbmc/armbian/kodi-build-deps-buster-xu4_18.9-0armbian1_armhf.deb -t buster-backports
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
