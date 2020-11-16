@@ -49,8 +49,8 @@ After finishing the above steps:
 	$ cd ../xbmc
 	$ export CFLAGS="-O2 -march=armv8-a -mtune=cortex-a53 -ftree-vectorize" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS && export CXX_FLAGS=$CFLAGS
 	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local
-	$ cp -r armbian/addons-package/armhf/DEBIAN ../kodi-build/bin-addons/
-	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_armhf.deb
+	$ cp -r armbian/addons-package/arm64/DEBIAN ../kodi-build/bin-addons/
+	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_arm64.deb
 
 **You can find the output debs in the `kodi-build/packages` directory**
 
