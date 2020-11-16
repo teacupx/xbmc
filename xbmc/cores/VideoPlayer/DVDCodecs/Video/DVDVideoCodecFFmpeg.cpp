@@ -40,6 +40,19 @@ extern "C" {
 #define RINT lrint
 #endif
 
+/* define what FFMPEG codecs to use */
+/* leave empty string for autodetect */
+#define MPEG2TS_FFMPEG_CODEC ""
+#define H263_FFMPEG_CODEC    ""
+#define H264_FFMPEG_CODEC    "h264_rkmpp"
+#define HEVC_FFMPEG_CODEC    "hevc_rkmpp"
+#define MPEG4_FFMPEG_CODEC   ""
+#define MPEG1_FFMPEG_CODEC   ""
+#define MPEG2_FFMPEG_CODEC   ""
+#define VC1_FFMPEG_CODEC     ""
+#define VP8_FFMPEG_CODEC     "vp8_rkmpp"
+#define VP9_FFMPEG_CODEC     "vp9_rkmpp"
+
 enum DecoderState
 {
   STATE_NONE,
@@ -324,7 +337,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   m_hints = hints;
   m_options = options;
 
-  AVCodec* pCodec;
+  AVCodec* pCodec = nullptr;
 
   m_iOrientation = hints.orientation;
 
@@ -334,7 +347,48 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   m_processInfo.SetSwDeinterlacingMethods();
   m_processInfo.SetVideoInterlaced(false);
 
-  pCodec = avcodec_find_decoder(hints.codec);
+  if(!m_useSoftDecoder && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.usesoftwaredecoder"))
+  {
+    switch(hints.codec)
+    {
+      case AV_CODEC_ID_MPEG4:
+        pCodec = avcodec_find_decoder_by_name(MPEG4_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_MPEG2TS:
+        pCodec = avcodec_find_decoder_by_name(MPEG2TS_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_H263:
+        pCodec = avcodec_find_decoder_by_name(H263_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_H264:
+        pCodec = avcodec_find_decoder_by_name(H264_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_HEVC:
+        pCodec = avcodec_find_decoder_by_name(HEVC_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_MPEG1VIDEO:
+        pCodec = avcodec_find_decoder_by_name(MPEG1_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_MPEG2VIDEO:
+        pCodec = avcodec_find_decoder_by_name(MPEG2_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_VC1:
+        pCodec = avcodec_find_decoder_by_name(VC1_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_VP8:
+        pCodec = avcodec_find_decoder_by_name(VP8_FFMPEG_CODEC);
+        break;
+      case AV_CODEC_ID_VP9:
+        pCodec = avcodec_find_decoder_by_name(VP9_FFMPEG_CODEC);
+        break;
+      default:
+        pCodec = avcodec_find_decoder(hints.codec);
+        break;
+    }
+  }
+
+  if(pCodec == NULL)
+    pCodec = avcodec_find_decoder(hints.codec);
 
   if(pCodec == NULL)
   {
@@ -433,7 +487,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   }
 
   UpdateName();
-  const char* pixFmtName = av_get_pix_fmt_name(m_pCodecContext->pix_fmt);
+  const char* pixFmtName = av_get_pix_fmt_name(GetFormat(m_pCodecContext, &m_pCodecContext->pix_fmt));
   m_processInfo.SetVideoDimensions(m_pCodecContext->coded_width, m_pCodecContext->coded_height);
   m_processInfo.SetVideoPixelFormat(pixFmtName ? pixFmtName : "");
 
@@ -511,15 +565,23 @@ void CDVDVideoCodecFFmpeg::SetFilters()
 
 void CDVDVideoCodecFFmpeg::UpdateName()
 {
+  bool isHW = false;
   if(m_pCodecContext->codec->name)
+  {
     m_name = std::string("ff-") + m_pCodecContext->codec->name;
+    if(strstr(m_pCodecContext->codec->name, "rkmpp") != NULL)
+      isHW = true;
+  }
   else
     m_name = "ffmpeg";
 
   if(m_pHardware)
+  {
     m_name += "-" + m_pHardware->Name();
+    isHW = true;
+  }
 
-  m_processInfo.SetVideoDecoderName(m_name, m_pHardware ? true : false);
+  m_processInfo.SetVideoDecoderName(m_name, isHW ? true : false);
 
   CLog::Log(LOGDEBUG, "CDVDVideoCodecFFmpeg - Updated codec: %s", m_name.c_str());
 }
@@ -743,8 +805,14 @@ CDVDVideoCodec::VCReturn CDVDVideoCodecFFmpeg::GetPicture(VideoPicture* pVideoPi
   if (m_pDecodedFrame->interlaced_frame)
     m_interlaced = true;
   else
+  {
     m_interlaced = false;
-
+    if (m_useSoftDecoder)
+    {
+      m_useSoftDecoder = false;
+      return VC_REOPEN;
+    }
+  }
   if (!m_processInfo.GetVideoInterlaced() && m_interlaced)
     m_processInfo.SetVideoInterlaced(m_interlaced);
 
