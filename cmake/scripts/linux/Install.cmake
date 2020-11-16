@@ -40,13 +40,14 @@ configure_file(${CMAKE_SOURCE_DIR}/tools/Linux/kodi-standalone.sh.in
 configure_file(${CMAKE_SOURCE_DIR}/cmake/KodiConfig.cmake.in
                ${CORE_BUILD_DIR}/scripts/${APP_NAME}Config.cmake @ONLY)
 
+# NOT WORKING FOR GBM VERSION, WE REPLACE THEM IN THE armbian-media PACKAGE
 # Configure xsession entry
-configure_file(${CMAKE_SOURCE_DIR}/tools/Linux/kodi-xsession.desktop.in
-               ${CORE_BUILD_DIR}/${APP_NAME_LC}-xsession.desktop @ONLY)
+#configure_file(${CMAKE_SOURCE_DIR}/tools/Linux/kodi-xsession.desktop.in
+#               ${CORE_BUILD_DIR}/${APP_NAME_LC}-xsession.desktop @ONLY)
 
 # Configure desktop entry
-configure_file(${CMAKE_SOURCE_DIR}/tools/Linux/kodi.desktop.in
-               ${CORE_BUILD_DIR}/${APP_NAME_LC}.desktop @ONLY)
+#configure_file(${CMAKE_SOURCE_DIR}/tools/Linux/kodi.desktop.in
+#               ${CORE_BUILD_DIR}/${APP_NAME_LC}.desktop @ONLY)
 
 # Install app
 install(TARGETS ${APP_NAME_LC}
@@ -82,16 +83,17 @@ foreach(file ${install_data})
           COMPONENT kodi)
 endforeach()
 
+# NOT WORKING FOR GBM VERSION, WE REPLACE THEM IN THE armbian-media PACKAGE
 # Install xsession entry
-install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/${APP_NAME_LC}-xsession.desktop
-        RENAME ${APP_NAME_LC}.desktop
-        DESTINATION ${datarootdir}/xsessions
-        COMPONENT kodi)
+#install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/${APP_NAME_LC}-xsession.desktop
+#        RENAME ${APP_NAME_LC}.desktop
+#        DESTINATION ${datarootdir}/xsessions
+#        COMPONENT kodi)
 
 # Install desktop entry
-install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/${APP_NAME_LC}.desktop
-        DESTINATION ${datarootdir}/applications
-        COMPONENT kodi)
+#install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/${APP_NAME_LC}.desktop
+#        DESTINATION ${datarootdir}/applications
+#        COMPONENT kodi)
 
 # Install icons
 install(FILES ${CMAKE_SOURCE_DIR}/tools/Linux/packaging/media/icon16x16.png
