@@ -14,17 +14,18 @@ Currently, only native armhf and arm64 compiling is supported (either on an ARM 
 	$ dpkg -i ./xbmc/armbian/extra-libs/armhf/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 -DENABLE_NEON=ON -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DAPP_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=armhf -DWITH_ARCH=arm -DWITH_CPU=cortex-a17 -DENABLE_NEON=ON -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc
 	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 ### Binary addons
 After finishing the above steps:
 
-	$ dpkg -i packages/kodi-addon-dev*.deb
 	$ mkdir bin-addons
+	$ dpkg-deb -x packages/kodi-addon-dev*.deb bin-addons
 	$ cd ../xbmc
 	$ export CFLAGS="-O2  -march=armv7-a -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS && export CXX_FLAGS=$CFLAGS
 	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local
+	$ rm -r ../kodi-build/bin-addons/usr/local/{include,share/doc,share/kodi/cmake}
 	$ cp -r armbian/addons-package/armhf/DEBIAN ../kodi-build/bin-addons/
 	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_armhf.deb
 
@@ -38,17 +39,18 @@ After finishing the above steps:
 	$ dpkg -i ./xbmc/armbian/extra-libs/arm64/*.deb
 	$ mkdir kodi-build
 	$ cd kodi-build
-	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=arm64 -DWITH_ARCH=aarch64 -DWITH_CPU=cortex-a53 -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc
+	$ cmake -lpthread -DFFMPEG_URL=tools/depends/target/ffmpeg/4.0.4-Leia-18.4.tar.gz -DENABLE_INTERNAL_FFMPEG=ON -DENABLE_INTERNAL_FLATBUFFERS=ON -DENABLE_VAAPI=OFF -DENABLE_VDPAU=OFF -DENABLE_OPENGLES=ON -DCORE_PLATFORM_NAME=gbm -DGBM_RENDER_SYSTEM=gles -DAPP_RENDER_SYSTEM=gles -DENABLE_OPENGL=OFF -DCPACK_GENERATOR=DEB -DDISTRO_CODENAME=buster -DDEBIAN_PACKAGE_VERSION=18.9 -DDEBIAN_PACKAGE_REVISION=0armbian1 -DDEB_PACKAGE_ARCHITECTURE=arm64 -DWITH_ARCH=aarch64 -DWITH_CPU=cortex-a53 -DENABLE_EVENTCLIENTS=ON -DCMAKE_BUILD_TYPE=Release -DENABLE_CCACHE=ON ../xbmc
 	$ cmake --build . -- -j$(nproc --all)
 	$ cpack
 ### Binary addons
 After finishing the above steps:
 
-	$ dpkg -i packages/kodi-addon-dev*.deb
 	$ mkdir bin-addons
+	$ dpkg-deb -x packages/kodi-addon-dev*.deb bin-addons
 	$ cd ../xbmc
 	$ export CFLAGS="-O2 -march=armv8-a -mtune=cortex-a53 -ftree-vectorize" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS && export CXX_FLAGS=$CFLAGS
 	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local
+	$ rm -r ../kodi-build/bin-addons/usr/local/{include,share/doc,share/kodi/cmake}
 	$ cp -r armbian/addons-package/arm64/DEBIAN ../kodi-build/bin-addons/
 	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_arm64.deb
 

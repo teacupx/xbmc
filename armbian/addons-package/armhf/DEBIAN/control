@@ -1,0 +1,15 @@
+Package: kodi-addons-full
+Version: 18.9-0armbian1
+Architecture: armhf
+Maintainer: JMCC <JMCC@localhost>
+Installed-Size: 250000
+Section: x11
+Priority: optional
+Depends: kodi
+Description: Full collection of addons for Kodi, including:
+    * Audio and video decoders
+    * Emulator cores
+    * PVR
+    * Screensavers
+    * Visualizations
+
