@@ -20,12 +20,11 @@ Currently, only native armhf and arm64 compiling is supported (either on an ARM 
 ### Binary addons
 After finishing the above steps:
 
+	$ dpkg -i packages/kodi-addon-dev*.deb
 	$ mkdir bin-addons
-	$ dpkg-deb -x packages/kodi-addon-dev*.deb bin-addons
 	$ cd ../xbmc
 	$ export CFLAGS="-O2  -march=armv7-a -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -ftree-vectorize -mvectorize-with-neon-quad" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS && export CXX_FLAGS=$CFLAGS
-	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local
-	$ rm -r ../kodi-build/bin-addons/usr/local/{include,share/doc,share/kodi/cmake}
+	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local EXTRA_CMAKE_ARGS="-DAPP_RENDER_SYSTEM=gles"
 	$ cp -r armbian/addons-package/armhf/DEBIAN ../kodi-build/bin-addons/
 	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_armhf.deb
 
@@ -45,12 +44,11 @@ After finishing the above steps:
 ### Binary addons
 After finishing the above steps:
 
+	$ dpkg -i packages/kodi-addon-dev*.deb
 	$ mkdir bin-addons
-	$ dpkg-deb -x packages/kodi-addon-dev*.deb bin-addons
 	$ cd ../xbmc
 	$ export CFLAGS="-O2 -march=armv8-a -mtune=cortex-a53 -ftree-vectorize" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS && export CXX_FLAGS=$CFLAGS
-	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local
-	$ rm -r ../kodi-build/bin-addons/usr/local/{include,share/doc,share/kodi/cmake}
+	$ make -j$(nproc --all) -C tools/depends/target/binary-addons PREFIX=$(pwd)/../kodi-build/bin-addons/usr/local EXTRA_CMAKE_ARGS="-DAPP_RENDER_SYSTEM=gles"
 	$ cp -r armbian/addons-package/arm64/DEBIAN ../kodi-build/bin-addons/
 	$ dpkg-deb -b ../kodi-build/bin-addons/ ../kodi-build/packages/kodi-addons-full_18.9-0armbian1_arm64.deb
 
