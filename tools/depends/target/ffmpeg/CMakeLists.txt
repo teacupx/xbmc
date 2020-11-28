@@ -117,7 +117,7 @@ externalproject_add(ffmpeg
                       --enable-encoder=wmav2
                       --enable-protocol=http
                       --enable-encoder=png
-                      --enable-encoder=mjpeg
+                      --enable-encoder=mjpeg --arch=${CMAKE_LIBRARY_ARCHITECTURE}
                       ${ffmpeg_conf})
 
 install(CODE "Message(Done)")
