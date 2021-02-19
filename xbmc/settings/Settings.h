@@ -86,6 +86,7 @@ public:
   static const std::string SETTING_VIDEOPLAYER_SEEKSTEPS;
   static const std::string SETTING_VIDEOPLAYER_SEEKDELAY;
   static const std::string SETTING_VIDEOPLAYER_ADJUSTREFRESHRATE;
+  static const std::string SETTING_VIDEOPLAYER_USESOFTWAREDECODER;
   static const std::string SETTING_VIDEOPLAYER_USEDISPLAYASCLOCK;
   static const std::string SETTING_VIDEOPLAYER_ERRORINASPECT;
   static const std::string SETTING_VIDEOPLAYER_STRETCH43;
