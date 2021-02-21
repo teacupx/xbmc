@@ -17,6 +17,8 @@
 #include <unistd.h>
 
 #include "platform/linux/XTimeUtils.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "windowing/GraphicContext.h"
@@ -24,6 +26,12 @@
 #include "DRMUtils.h"
 
 using namespace KODI::WINDOWING::GBM;
+
+const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT = "videoscreen.hdmioutputformat";
+const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT = "videoplayer.hdmioutputformat";
+const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE = "videoscreen.hdmiquantizationrange";
+const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMICONTENTTYPE = "videoscreen.hdmicontenttype";
+const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE = "videoplayer.hdmicontenttype";
 
 CDRMUtils::CDRMUtils()
   : m_connector(new connector)
@@ -836,4 +844,42 @@ bool CDRMUtils::CheckConnector(int connector_id)
   drmModeFreeConnector(connectorcheck.connector);
 
   return finalConnectionState == DRM_MODE_CONNECTED;
+}
+
+enum hdmi_output_format {
+  HDMI_OUTPUT_DEFAULT_RGB,
+  HDMI_OUTPUT_YCBCR444,
+  HDMI_OUTPUT_YCBCR422,
+  HDMI_OUTPUT_YCBCR420,
+  HDMI_OUTPUT_YCBCR_HQ,
+  HDMI_OUTPUT_YCBCR_LQ,
+};
+
+int CDRMUtils::GetHdmiOutputFormat(bool videoLayer)
+{
+  int outputFormat = 0;
+  if (videoLayer)
+    outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT);
+  if (outputFormat == 0)
+    outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT);
+  if (outputFormat == 2)
+    return HDMI_OUTPUT_YCBCR_LQ;
+  if (outputFormat == 3)
+    return HDMI_OUTPUT_YCBCR_HQ;
+  return HDMI_OUTPUT_DEFAULT_RGB;
+}
+
+int CDRMUtils::GetHdmiQuantizationRange()
+{
+  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE);
+}
+
+int CDRMUtils::GetHdmiContentType(bool videoLayer)
+{
+  int contentType = 0;
+  if (videoLayer)
+    contentType = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOPLAYER_HDMICONTENTTYPE);
+  if (contentType == 0)
+    contentType = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMICONTENTTYPE);
+  return contentType;
 }

@@ -109,6 +109,7 @@ public:
   std::vector<uint64_t> *GetVideoPlaneModifiersForFormat(uint32_t format) { return &m_video_plane->modifiers_map[format]; }
   std::vector<uint64_t> *GetGuiPlaneModifiersForFormat(uint32_t format) { return &m_gui_plane->modifiers_map[format]; }
   struct crtc* GetCrtc() const { return m_crtc; }
+  struct connector* GetConnector() const { return m_connector; }
 
   virtual RESOLUTION_INFO GetCurrentMode();
   virtual std::vector<RESOLUTION_INFO> GetModes();
@@ -120,6 +121,16 @@ public:
 
   static uint32_t FourCCWithAlpha(uint32_t fourcc);
   static uint32_t FourCCWithoutAlpha(uint32_t fourcc);
+
+  static const std::string SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT;
+  static const std::string SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT;
+  static const std::string SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE;
+  static const std::string SETTING_VIDEOSCREEN_HDMICONTENTTYPE;
+  static const std::string SETTING_VIDEOPLAYER_HDMICONTENTTYPE;
+
+  int GetHdmiOutputFormat(bool videoLayer);
+  int GetHdmiQuantizationRange();
+  int GetHdmiContentType(bool videoLayer);
 
 protected:
   bool OpenDrm(bool needConnector);
